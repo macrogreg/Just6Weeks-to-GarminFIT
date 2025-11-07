@@ -4,12 +4,10 @@ using System.Globalization;
 using Dynastream.Fit;
 using Just6Weeks_to_GarminFIT;
 
-class CsvToFit
+class Runner
 {
     static void Main(string[] args)
-    {
-        //Version1.Run(args);
-        (new Version2()).Run(args);
-        //Version3.Run(args);
+    {        
+        (new Version2()).Run(args);        
     }
 }
