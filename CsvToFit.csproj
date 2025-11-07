@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+
+  <!-- The FIT SDK can be used by building it locally or by using a NuGet.                               -->
+  <!-- The sources come with some tools, so building it locally during development has some advantages. -->
+  <!-- It's available at https://developer.garmin.com/fit/download/                                      -->
+  <!-- However, because of the SDK's license, distributed version of this tool uses the NuGet.           -->
+	
+  <!-- Use FIT SDK via NuGet: -->
+  <!-- -->
+  <ItemGroup>
+    <PackageReference Include=" Garmin.FIT.Sdk" Version="21.171.0" />
+  </ItemGroup>
+  <!-- -->
+
+  <!-- Use FIT SDK via downloaded sources: -->
+  <!--
+  <ItemGroup>
+	<Compile Include=".DONT-Commit-to-GIT\FitSDKRelease_21.171.00\cs\**\*.cs" />
+  </ItemGroup>
+  -->
+
+</Project>

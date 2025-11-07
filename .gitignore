@@ -3,6 +3,11 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+# Private file and files with licenses preventing distribution: 
+.DONT-Commit-to-GIT
+/Sample-Data
+/Sample-Data (*)
+
 # User-specific files
 *.rsuser
 *.suo
