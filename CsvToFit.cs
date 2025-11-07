@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Dynastream.Fit;
 using FIT = Dynastream.Fit;
 
@@ -54,8 +53,8 @@ internal static class Extensions
 
 internal record Just6WeeksWorkout
 {
-    private Dictionary<int, int> _setReps = new();
-    private Dictionary<int, TimeSpan> _lapTimes = new();
+    private readonly Dictionary<int, int> _setReps = new();
+    private readonly Dictionary<int, TimeSpan> _lapTimes = new();
 
     public System.DateTime StartTime { get; set; }
 
@@ -120,7 +119,7 @@ internal record Just6WeeksWorkout
 
     public override string ToString()
     {
-        return $"Start='{StartTime.ToString("yy-MM-dd HH:mm:ss")}'; Type='{Type}'; Week={TrainingWeek}; Day={DayInTrainingWeek};"
+        return $"Start='{StartTime:yy-MM-dd HH:mm:ss}'; Type='{Type}'; Week={TrainingWeek}; Day={DayInTrainingWeek};"
              + $" Time='{TotalTime.PrettyPrint()}';"
              + $" Sets={{{PrintSet(1)}, {PrintSet(2)}, {PrintSet(3)}, {PrintSet(4)}, {PrintSet(5)}}};"
              + $" SumOfSets={PrintSumOfSets()}; Kcal={Kcal}; Breaks='{GetBreakDuration().PrettyPrint()}'";
@@ -133,7 +132,7 @@ internal record Just6WeeksWorkout
 
 internal record Just6WeeksSession
 {
-    private List<Just6WeeksWorkout> _workouts = new();
+    private readonly List<Just6WeeksWorkout> _workouts = new();
     public IReadOnlyList<Just6WeeksWorkout> Workouts => _workouts;
     public System.DateTime StartTime { get; private set; }
     public System.DateTime EndTime { get; private set; }
@@ -168,7 +167,6 @@ public class CsvToFit
         Console.WriteLine(AppName);
 
         DateTimeOffset appStartTime = DateTimeOffset.Now;
-        System.DateTime appStartTimeLocal = appStartTime.DateTime;
 
         _countReadErrors = _countWriteErrors = _countWorkoutsSkipped = _countSessionsSkipped = 0;
 
@@ -185,7 +183,7 @@ public class CsvToFit
         Console.WriteLine($"Reading '{inFileName}'...");
 
         IReadOnlyList<Just6WeeksSession> sessions;
-        FileStream inFile = new FileStream(inFileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+        FileStream inFile = new(inFileName, FileMode.Open, FileAccess.Read, FileShare.Read);
         using (inFile)
         {
             sessions = ReadInput(inFile);
@@ -217,7 +215,7 @@ public class CsvToFit
 
             Console.WriteLine($"\nExporting session {s + 1}/{sessions.Count} to '{outFilePath}'.");
 
-            FileStream outFile = new FileStream(outFilePath, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
+            FileStream outFile = new(outFilePath, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
             using (outFile)
             {
                 WriteActivityFile(outFile, session, appStartTime.AddSeconds(countWrittenSessions), out int writtenSessionWorkouts);
@@ -265,7 +263,7 @@ public class CsvToFit
         }
     }
 
-    string GetOutFileDir(string inFilePath)
+    private static string GetOutFileDir(string inFilePath)
     {        
         // Normalize and extract parts:
         string directory = Path.GetDirectoryName(inFilePath) ?? "";
@@ -477,7 +475,8 @@ public class CsvToFit
         return sessions;
     }
 
-    internal int ParseCountOrTimespan(string rawStr, string fieldName, string workoutTypeNorm)
+    internal static int ParseCountOrTimespan(string rawStr, string fieldName, string workoutTypeNorm)
+    // (Not currently used but kept for future referecne)
     {        
         try
         {
@@ -559,7 +558,7 @@ public class CsvToFit
 
         // Create a FIT Encode object:
 
-        Encode encoder = new Encode(ProtocolVersion.V20);
+        Encode encoder = new(ProtocolVersion.V20);
         encoder.Open(outStr);
 
         try
@@ -725,7 +724,7 @@ public class CsvToFit
         }
     }
 
-    private bool TryGetFitExerciseCategory(Just6WeeksWorkout workout, out ushort exerciseCategory, out ushort exerciseNameCode)
+    private static bool TryGetFitExerciseCategory(Just6WeeksWorkout workout, out ushort exerciseCategory, out ushort exerciseNameCode)
     {
         switch (workout.TypeNorm)
         {
@@ -761,7 +760,7 @@ public class CsvToFit
         }
     }
 
-    private void WriteHeaderMessages(Encode encoder, DateTimeOffset sessionCreationTimetamp)
+    private static void WriteHeaderMessages(Encode encoder, DateTimeOffset sessionCreationTimetamp)
     {
         // Every FIT file MUST contain a File ID message
         FileIdMesg fileIdMesg = new();
@@ -787,7 +786,7 @@ public class CsvToFit
         encoder.Write(deviceInfoMesg);
     }
 
-    private DeveloperDataIdMesg WriteDevDataIdMessage(Encode encoder)
+    private static DeveloperDataIdMesg WriteDevDataIdMessage(Encode encoder)
     {
         // Create the Developer Id message for the developer data fields.
         DeveloperDataIdMesg devIdMesg = new();
@@ -805,7 +804,7 @@ public class CsvToFit
         return devIdMesg;
     }
 
-    private
+    private static
     (
         FieldDescriptionMesg trainWeekFieldDescMesg,
         FieldDescriptionMesg trainDayInWeekFieldDescMesg
@@ -813,7 +812,7 @@ public class CsvToFit
     {
         // Create the Developer Data Field Descriptions
 
-        FieldDescriptionMesg trainingWeekNumDescMesg = new FieldDescriptionMesg();
+        FieldDescriptionMesg trainingWeekNumDescMesg = new();
         trainingWeekNumDescMesg.SetDeveloperDataIndex(devDataIndex);
         trainingWeekNumDescMesg.SetFieldDefinitionNumber(0);
         trainingWeekNumDescMesg.SetFitBaseTypeId(FitBaseType.Uint16);
@@ -821,7 +820,7 @@ public class CsvToFit
         trainingWeekNumDescMesg.SetUnits(0, "weeks");
         trainingWeekNumDescMesg.SetNativeMesgNum(MesgNum.Session);
 
-        FieldDescriptionMesg trainingDayInWeekNumDescMesg = new FieldDescriptionMesg();
+        FieldDescriptionMesg trainingDayInWeekNumDescMesg = new();
         trainingDayInWeekNumDescMesg.SetDeveloperDataIndex(devDataIndex);
         trainingDayInWeekNumDescMesg.SetFieldDefinitionNumber(1);
         trainingDayInWeekNumDescMesg.SetFitBaseTypeId(FitBaseType.Uint8);
