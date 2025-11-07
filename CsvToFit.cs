@@ -149,12 +149,17 @@ internal record Just6WeeksSession
     }
 }
 
-public class Version2
+public class CsvToFit
 {
     private int _countReadErrors = 0;
     private int _countWriteErrors = 0;
     private int _countWorkoutsSkipped = 0;
     private int _countSessionsSkipped = 0;
+  
+    static void Main(string[] args)
+    {
+        (new CsvToFit()).Run(args);
+    }    
 
     public void Run(string[] args)
     {
