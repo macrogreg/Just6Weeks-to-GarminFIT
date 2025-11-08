@@ -1,4 +1,8 @@
-﻿
+﻿/// <summary>
+/// Authored by MACROGREG. See: https://github.com/macrogreg/Just6Weeks-to-GarminFIT
+/// Convert a CSV table with gym workout data to a FIT file in order to import into Garmin Connect.
+/// </summary>
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -288,6 +292,7 @@ public class CsvToFit
 
     private IReadOnlyList<Just6WeeksSession> ReadInput(Stream inStr)
     {
+        const string CsvSeparatorChar = ';';
         Console.WriteLine();
 
         // Check for valid In Stream:
@@ -319,7 +324,7 @@ public class CsvToFit
 
             try
             {
-                string[] lineFields = line.Split(';');
+                string[] lineFields = line.Split(CsvSeparatorChar);
                 if (lineFields.Length < 14)
                 {
                     throw new Exception($"Line {lineNum} has {lineFields.Length} columns, but at least 14 were expected.");
