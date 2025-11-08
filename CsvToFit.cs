@@ -292,7 +292,7 @@ public class CsvToFit
 
     private IReadOnlyList<Just6WeeksSession> ReadInput(Stream inStr)
     {
-        const string CsvSeparatorChar = ';';
+        const char CsvSeparatorChar = ';';
         Console.WriteLine();
 
         // Check for valid In Stream:
